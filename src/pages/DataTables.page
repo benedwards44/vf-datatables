@@ -1,0 +1,149 @@
+<apex:page title="jQuery Datatables Example" controller="DataTablesController">
+
+	<!-- Incorporate the Salesforce Lightning Design System stylesheet -->
+	<apex:stylesheet value="{!URLFOR($Resource.SLDS212, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}" />  
+
+	<!-- Inlcude DataTables -->
+
+	<!-- Suggest removing the DataTables CSS to use fully working Lightning Design datatable -->
+	<apex:stylesheet value="{!URLFOR($Resource.DataTables, 'datatables.min.css')}" />
+	<apex:includeScript value="{!URLFOR($Resource.DataTables, 'datatables.min.js')}" />
+
+ 
+	<!-- Wrap the page in the custom CSS namespace - datatables -->
+	<div class="datatables">
+
+		<div class="slds-page-header" role="banner">
+	
+				<div class="slds-grid">
+	
+					<div class="slds-col slds-has-flexi-truncate">
+						<div class="slds-media slds-media--center slds-no-space slds-grow">
+							<div class="slds-media__figure">
+								<span class="slds-avatar slds-avatar--medium" >
+									<img src="{!URLFOR($Resource.SLDS212, 'assets/icons/utility/table_120.png')}" alt="DataTables" />   
+								</span>
+							</div>
+							<div class="slds-media__body">
+								<p class="slds-text-heading--label">jQuery DataTables</p>
+								<h1 class="slds-page-header__title slds-m-right--small slds-truncate slds-align-middle" title="jQuery DataTables">Example for jQuery DataTables.</h1>
+							</div>
+						</div>
+					</div>
+	
+					<div class="slds-col slds-no-flex slds-grid slds-align-bottom">
+						
+						<div class="slds-button-group" role="group">  
+							
+						</div>
+					</div>
+	
+				</div>			  
+	
+			</div>	
+						
+			<div class="slds-grid slds-wrap slds-grid--pull-padded">
+
+				<div class="slds-col--padded slds-size--1-of-1 slds-p-around--large">
+
+					<table class="slds-table slds-table--bordered slds-table--cell-buffer" id="datatable">
+						<thead>
+							<tr class="slds-text-title--caps">
+								<th scope="col">
+							        <div class="slds-truncate" title="First Name">First Name</div>
+							    </th>
+							    <th scope="col">
+							        <div class="slds-truncate" title="Last Name">Last Name</div>
+							    </th>
+							    <th scope="col">
+							        <div class="slds-truncate" title="Email">Email</div>
+							    </th>
+							    <th scope="col">
+							        <div class="slds-truncate" title="Phone">Phone</div>
+							    </th>
+							</tr>
+						</thead>
+
+						<tbody>
+
+						</tbody>
+
+					</table>
+
+				</div>
+
+			</div>
+
+	</div>
+
+	<script>
+
+		$(document).ready(function() {
+
+			initDatatable();
+		});
+		
+		// Call the Remote Action method to build the list of contacts for the table
+		function initDatatable() {
+
+			Visualforce.remoting.Manager.invokeAction(
+				'{!$RemoteAction.DataTablesController.getContacts}',
+				function(result, event) {
+
+					if (event.status) {
+
+						// Iterate over the results to build the dataset
+						for (var i = 0; i < result.length; i++) {
+
+							// Build the HTML to add to the table
+							var tableRow = '<tr>';
+
+							// Add the first name
+							tableRow += getTableCell(result[i], 'FirstName','First Name');
+							tableRow += getTableCell(result[i], 'LastName','Last Name');
+							tableRow += getTableCell(result[i], 'Email','Email');
+							tableRow += getTableCell(result[i], 'Phone','Phone');
+
+							tableRow += '</tr>';
+
+							// Add the row as HTML
+							$('#datatable tbody').append(tableRow);
+						}
+
+						// Launch the datatable
+						$('#datatable').DataTable();
+					} 
+					else {
+
+						alert(event.message);
+					}
+				},
+				{escape: true}
+			);
+		}
+
+		// Build the HTML for the table row
+		function getTableCell(object, fieldName, fieldLabel) {
+
+			// Get the field value for the row
+			var fieldValue = getFieldValue(object, fieldName);
+
+			var tableCell = '<td data-label="' + fieldLabel + '">';
+			tableCell += '<div class="slds-truncate" title="' + fieldValue + '">' + fieldValue + '</div>';
+			tableCell += '</td>';
+			return tableCell;
+		}
+
+		// Get field value or null if not found
+		function getFieldValue(object, fieldName) {
+
+			if (fieldName in object) {
+				return object[fieldName];
+			}
+			else {
+				return '';
+			}
+		}
+	</script>
+
+</apex:page>
