@@ -46,29 +46,7 @@
 
 				<div class="slds-col--padded slds-size--1-of-1 slds-p-around--large">
 
-					<table class="slds-table slds-table--bordered slds-table--cell-buffer" id="datatable">
-						<thead>
-							<tr class="slds-text-title--caps">
-								<th scope="col">
-							        <div class="slds-truncate" title="First Name">First Name</div>
-							    </th>
-							    <th scope="col">
-							        <div class="slds-truncate" title="Last Name">Last Name</div>
-							    </th>
-							    <th scope="col">
-							        <div class="slds-truncate" title="Email">Email</div>
-							    </th>
-							    <th scope="col">
-							        <div class="slds-truncate" title="Phone">Phone</div>
-							    </th>
-							</tr>
-						</thead>
-
-						<tbody>
-
-						</tbody>
-
-					</table>
+					<table class="slds-table slds-table--bordered slds-table--cell-buffer" id="datatable"></table>
 
 				</div>
 
@@ -82,8 +60,8 @@
 
 			initDatatable();
 		});
-		
-		// Call the Remote Action method to build the list of contacts for the table
+
+
 		function initDatatable() {
 
 			Visualforce.remoting.Manager.invokeAction(
@@ -92,26 +70,35 @@
 
 					if (event.status) {
 
+						var records = [];
+
 						// Iterate over the results to build the dataset
 						for (var i = 0; i < result.length; i++) {
 
-							// Build the HTML to add to the table
-							var tableRow = '<tr>';
+							var record = [];
 
-							// Add the first name
-							tableRow += getTableCell(result[i], 'FirstName','First Name');
-							tableRow += getTableCell(result[i], 'LastName','Last Name');
-							tableRow += getTableCell(result[i], 'Email','Email');
-							tableRow += getTableCell(result[i], 'Phone','Phone');
+							record.push(getFieldValue(result[i], 'FirstName'));
+							record.push(getFieldValue(result[i], 'LastName'));
+							record.push(getFieldValue(result[i], 'Email'));
+							record.push(getFieldValue(result[i], 'Phone'));
 
-							tableRow += '</tr>';
-
-							// Add the row as HTML
-							$('#datatable tbody').append(tableRow);
+							records.push(record);
 						}
 
 						// Launch the datatable
-						$('#datatable').DataTable();
+						$('#datatable').DataTable({
+							data: records,
+				            deferRender:    true,
+				            scrollY:        200,
+				            scrollCollapse: true,
+				            scroller:       true,
+					        columns: [
+					            { title: "First Name" },
+					            { title: "Last Name" },
+					            { title: "Email" },
+					            { title: "Phone" }
+					        ]
+						});
 					} 
 					else {
 
@@ -121,19 +108,7 @@
 				{escape: true}
 			);
 		}
-
-		// Build the HTML for the table row
-		function getTableCell(object, fieldName, fieldLabel) {
-
-			// Get the field value for the row
-			var fieldValue = getFieldValue(object, fieldName);
-
-			var tableCell = '<td data-label="' + fieldLabel + '">';
-			tableCell += '<div class="slds-truncate" title="' + fieldValue + '">' + fieldValue + '</div>';
-			tableCell += '</td>';
-			return tableCell;
-		}
-
+	
 		// Get field value or null if not found
 		function getFieldValue(object, fieldName) {
 
