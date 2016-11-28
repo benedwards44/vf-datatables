@@ -41,7 +41,7 @@
     </packageVersions>
     <packageVersions>
         <majorNumber>1</majorNumber>
-        <minorNumber>0</minorNumber>
+        <minorNumber>5</minorNumber>
         <namespace>txtinit</namespace>
     </packageVersions>
 </ApexPage>

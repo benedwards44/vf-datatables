@@ -7,8 +7,8 @@
 
 	<!-- Suggest removing the DataTables CSS to use fully working Lightning Design datatable -->
 	<apex:stylesheet value="{!URLFOR($Resource.DataTables, 'datatables.min.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.DataTables, 'custom.css')}" />
 	<apex:includeScript value="{!URLFOR($Resource.DataTables, 'datatables.min.js')}" />
-
  
 	<!-- Wrap the page in the custom CSS namespace - datatables -->
 	<div class="datatables">
@@ -46,7 +46,36 @@
 
 				<div class="slds-col--padded slds-size--1-of-1 slds-p-around--large">
 
-					<table class="slds-table slds-table--bordered slds-table--cell-buffer" id="datatable"></table>
+					<div id="loading" >
+						<img src="/img/loading.gif" />
+						&nbsp;Loading table...
+					</div>
+
+					<div id="table-wrapper">
+						<table class="slds-table slds-table--bordered slds-table--cell-buffer" id="datatable">
+							
+							<thead>
+	                            <tr class="slds-text-title--caps">
+	                                <th scope="col">
+	                                    <div class="slds-truncate" title="First Name">First Name</div>
+	                                </th>
+	                                <th scope="col">
+	                                    <div class="slds-truncate" title="Last Name">Last Name</div>
+	                                </th>
+	                                <th scope="col">
+	                                    <div class="slds-truncate" title="Email">Email</div>
+	                                </th>
+	                                <th scope="col">
+	                                    <div class="slds-truncate" title="Phone">Phone</div>
+	                                </th>
+	                            </tr>
+	                        </thead>
+
+	                        <!-- The body of the table is rendered via JavaScript after filters change -->
+	                        <tbody></tbody>
+
+						</table>
+					</div>
 
 				</div>
 
@@ -55,12 +84,9 @@
 	</div>
 
 	<script>
-
 		$(document).ready(function() {
-
 			initDatatable();
 		});
-
 
 		function initDatatable() {
 
@@ -88,17 +114,12 @@
 						// Launch the datatable
 						$('#datatable').DataTable({
 							data: records,
-				            deferRender:    true,
-				            scrollY:        200,
-				            scrollCollapse: true,
-				            scroller:       true,
-					        columns: [
-					            { title: "First Name" },
-					            { title: "Last Name" },
-					            { title: "Email" },
-					            { title: "Phone" }
-					        ]
+				            deferRender: true
 						});
+
+						// Show the table
+						$('#loading').hide();
+						$('#table-wrapper').show();
 					} 
 					else {
 
